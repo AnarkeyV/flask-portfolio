@@ -4,7 +4,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, redirect, render_template, request, url_for
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config["DEBUG"] = True
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////home/khairulrizal/mysite/comments.db"
