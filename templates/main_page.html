@@ -52,6 +52,13 @@
                     </button>
                     <a class="navbar-brand" href="/scratchpad">My Scratchpad</a>
                 </div>
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if current_user.is_authenticated %}
+                            <li><a href="{{ url_for('logout') }}">Log out</a></li>
+                        {% else %}
+                        <li><a href="{{ url_for('login') }}">Log in</a></li>
+                        {% endif %}
+                    </ul>
                 <div class="navbar-text navbar-right" style="margin-right: 15px;">
                     Khairul Rizal &nbsp;|&nbsp;
                     <a href="/">← Back to Portfolio</a>
@@ -77,15 +84,16 @@
             </div>
             {% endfor %}
 
+            {% if current_user.is_authenticated %}
             <div class="row" style="margin-top: 20px;">
                 <div class="col-md-8">
-                    <form action="." method="POST">
+                    <form action="/scratchpad" method="POST">
                         <textarea class="form-control" name="contents" rows="3" placeholder="Write a comment..."></textarea>
                         <input type="submit" class="btn btn-success" value="Post Comment">
                     </form>
                 </div>
             </div>
-
+            {% endif %}
         </div>
     </body>
 </html>
