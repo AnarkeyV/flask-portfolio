@@ -39,6 +39,7 @@ class Comment(db.Model):
     __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(4096))
+    posted = db.Column(db.DateTime, default=datetime.now)
 
 # ── Portfolio / profile page (main landing page) ─────────────────────────────
 @app.route("/")
@@ -49,7 +50,7 @@ def profile():
 @app.route("/scratchpad", methods=["GET", "POST"])
 def index():
     if request.method == "GET":
-        return render_template("main_page.html", comments=Comment.query.all(), timestamp=datetime.now())
+        return render_template("main_page.html", comments=Comment.query.all())
     if not current_user.is_authenticated:
         return redirect(url_for('index'))
     comment = Comment(content=request.form["contents"])
