@@ -15,32 +15,22 @@ app.secret_key = "mynameiskhairulrizalandiamsmart"
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-class User(UserMixin):
-
-    def __init__(self, username, password_hash):
-        self.username = username
-        self.password_hash = password_hash
-
+# ── User model now stored in SQLite ──────────────────────────────────────────
+class User(UserMixin, db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-
     def get_id(self):
-        return self.username
-
-all_users = {
-    "admin": User("admin", generate_password_hash("secret")),
-    "bob": User("bob", generate_password_hash("less-secret")),
-    "caroline": User("caroline", generate_password_hash("completely-secret")),
-}
-
+        return str(self.id)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return all_users.get(user_id)
-
-
+    return User.query.get(int(user_id))
 
 class Comment(db.Model):
     __tablename__ = "comments"
