@@ -1,5 +1,6 @@
 # flask_app.py
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_login import current_user, login_required, login_user, LoginManager, logout_user, UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask, redirect, render_template, request, url_for
@@ -11,6 +12,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////home/khairulrizal/mysite/com
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 app.secret_key = "mynameiskhairulrizalandiamsmart"
 login_manager = LoginManager()
