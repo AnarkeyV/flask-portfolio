@@ -3,43 +3,89 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
-
-        <title>My scratchboard page</title>
+        <title>My Scratchpad — Khairul Rizal</title>
+        <style>
+            body { background-color: #0a192f; color: #a8b2d8; }
+            .navbar-inverse { background-color: #112240; border-color: #c9a84c; }
+            .navbar-brand { color: #c9a84c !important; font-weight: bold; }
+            .navbar-text { color: #a8b2d8 !important; }
+            .navbar-text a { color: #c9a84c !important; }
+            .comment-box {
+                background: #112240;
+                border: 1px solid rgba(201,168,76,0.2);
+                border-radius: 6px;
+                padding: 14px 18px;
+                margin-bottom: 10px;
+                color: #ccd6f6;
+            }
+            textarea.form-control {
+                background: #112240;
+                color: #ccd6f6;
+                border-color: rgba(201,168,76,0.3);
+            }
+            textarea.form-control:focus {
+                border-color: #c9a84c;
+                box-shadow: 0 0 6px rgba(201,168,76,0.3);
+            }
+            .btn-success {
+                background-color: #c9a84c;
+                border-color: #c9a84c;
+                color: #0a192f;
+                font-weight: bold;
+                margin-top: 10px;
+            }
+            .btn-success:hover { background-color: #f0c96a; border-color: #f0c96a; }
+            .page-header { color: #e6f1ff; border-bottom-color: rgba(201,168,76,0.3); }
+            .intro-text { font-size: 0.95rem; margin-bottom: 24px; }
+        </style>
     </head>
-
     <body>
         <nav class="navbar navbar-inverse">
-          <div class="container">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="#">My scratchpad</a>
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">My Scratchpad</a>
+                </div>
+                <div class="navbar-text navbar-right" style="margin-right: 15px;">
+                    Khairul Rizal &nbsp;|&nbsp;
+                    <a href="/profile">← Back to Portfolio</a>
+                </div>
             </div>
-          </div>
         </nav>
 
-        <div class="container">
+        <div class="container" style="margin-top: 40px;">
+
+            <div class="page-header">
+                <h2>Comments Scratchpad</h2>
+            </div>
+
+            <p class="intro-text">
+                This is a live comments board backed by a SQLite database, built as part of the
+                <strong style="color:#c9a84c;">PythonAnywhere Flask Beginner's Guide</strong>.
+                Feel free to leave a comment below!
+            </p>
 
             {% for comment in comments %}
-            <div class="row">
-            {{ comment.content }}
+            <div class="comment-box">
+                {{ comment.content }}
             </div>
             {% endfor %}
 
-            <div class="row">
-                <form action="." method="POST">
-                    <textarea class="form-control" name="contents" placeholder="Enter a comment"></textarea>
-                    <input type="submit" class="btn btn-success" value="Post comment">
-                </form>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-md-8">
+                    <form action="." method="POST">
+                        <textarea class="form-control" name="contents" rows="3" placeholder="Write a comment..."></textarea>
+                        <input type="submit" class="btn btn-success" value="Post Comment">
+                    </form>
+                </div>
             </div>
 
         </div>
-
     </body>
 </html>
