@@ -65,8 +65,50 @@
         .hero-content {
             position: relative;
             z-index: 1;
-            max-width: 900px;
+            max-width: 1000px;
             width: 100%;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-text { max-width: 600px; }
+
+        .hero-photo-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease forwards 0.5s;
+        }
+
+        .hero-photo {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--gold);
+            box-shadow:
+                0 0 0 6px rgba(201,168,76,0.15),
+                0 20px 60px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hero-photo:hover {
+            transform: scale(1.03);
+            box-shadow:
+                0 0 0 8px rgba(201,168,76,0.25),
+                0 24px 70px rgba(0,0,0,0.6);
+        }
+
+        .hero-photo-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.9rem;
+            color: var(--light-slate);
+            text-align: center;
+            letter-spacing: 0.05em;
         }
 
         .hero-eyebrow {
@@ -633,7 +675,9 @@
             nav { padding: 16px 20px; }
             .nav-links { display: none; }
             .contact-wrapper { grid-template-columns: 1fr; gap: 40px; }
-            .hero-content { text-align: center; }
+            .hero-content { grid-template-columns: 1fr; text-align: center; }
+            .hero-photo-wrapper { order: -1; }
+            .hero-photo { width: 160px; height: 160px; }
             .hero-links { justify-content: center; }
             .scratchpad-callout { flex-direction: column; }
         }
@@ -679,32 +723,42 @@
     <div class="hero" id="about">
         <div class="hero-grid"></div>
         <div class="hero-content">
-            <p class="hero-eyebrow">DevOps & Cloud Engineer</p>
-            <h1 class="hero-name">Khairul <span>Rizal</span></h1>
-            <p class="hero-title">Building reliable systems · Automating workflows · Bridging ideas with live infrastructure</p>
-            <p class="hero-bio">
-                With 20 years of operational leadership in hospitality and a fresh foundation in cloud and DevOps engineering,
-                I bring a rare mix of process-minded execution and technical capability. I'm passionate about CI/CD pipelines,
-                infrastructure as code, and turning complex problems into clean, automated solutions.
-            </p>
-            <div class="hero-links">
-                <a href="https://www.linkedin.com/in/khairulrizalsg/" target="_blank" class="btn btn-primary">
-                    🔗 LinkedIn Profile
-                </a>
-                <a href="https://github.com/AnarkeyV/DevOpsPortfolio" target="_blank" class="btn btn-secondary">
-                    ⌥ GitHub Portfolio
-                </a>
-                <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+
+            <!-- LEFT: Text -->
+            <div class="hero-text">
+                <p class="hero-eyebrow">DevOps & Cloud Engineer</p>
+                <h1 class="hero-name">Khairul <span>Rizal</span></h1>
+                <p class="hero-title">Building reliable systems · Automating workflows · Bridging ideas with live infrastructure</p>
+                <p class="hero-bio">
+                    With 20 years of operational leadership in hospitality and a fresh foundation in cloud and DevOps engineering,
+                    I bring a rare mix of process-minded execution and technical capability. I'm passionate about CI/CD pipelines,
+                    infrastructure as code, and turning complex problems into clean, automated solutions.
+                </p>
+                <div class="hero-links">
+                    <a href="https://www.linkedin.com/in/khairulrizalsg/" target="_blank" class="btn btn-primary">
+                        🔗 LinkedIn Profile
+                    </a>
+                    <a href="https://github.com/AnarkeyV/DevOpsPortfolio" target="_blank" class="btn btn-secondary">
+                        ⌥ GitHub Portfolio
+                    </a>
+                    <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+                </div>
+
+                <!-- SCRATCHPAD CALLOUT -->
+                <div class="scratchpad-callout">
+                    <div class="callout-text">
+                        <p>🛠 Live Project</p>
+                        <h4>Comments Scratchpad — Flask + SQLite on PythonAnywhere</h4>
+                        <span>A live database-backed comments board built as part of my Flask beginner training. Leave a comment!</span>
+                    </div>
+                    <a href="/scratchpad" class="btn btn-secondary btn-sm">View Scratchpad →</a>
+                </div>
             </div>
 
-            <!-- SCRATCHPAD CALLOUT -->
-            <div class="scratchpad-callout">
-                <div class="callout-text">
-                    <p>🛠 Live Project</p>
-                    <h4>Comments Scratchpad — Flask + SQLite on PythonAnywhere</h4>
-                    <span>A live database-backed comments board built as part of my Flask beginner training. Leave a comment!</span>
-                </div>
-                <a href="/scratchpad" class="btn btn-secondary btn-sm">View Scratchpad →</a>
+            <!-- RIGHT: Profile Photo -->
+            <div class="hero-photo-wrapper">
+                <img src="/static/profile.jpg" alt="Khairul Rizal" class="hero-photo">
+                <p class="hero-photo-name">Khairul Rizal Bin Abd Hamid</p>
             </div>
 
         </div>
