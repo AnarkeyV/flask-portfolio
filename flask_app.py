@@ -40,6 +40,8 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(4096))
     posted = db.Column(db.DateTime, default=datetime.now)
+    commenter_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    commenter = db.relationship('User', foreign_keys=commenter_id)
 
 # ── Portfolio / profile page (main landing page) ─────────────────────────────
 @app.route("/")
@@ -53,7 +55,7 @@ def index():
         return render_template("main_page.html", comments=Comment.query.all())
     if not current_user.is_authenticated:
         return redirect(url_for('index'))
-    comment = Comment(content=request.form["contents"])
+    comment = Comment(content=request.form["contents"], commenter=current_user)
     db.session.add(comment)
     db.session.commit()
     return redirect(url_for('index'))
