@@ -2,13 +2,15 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import current_user, login_required, login_user, LoginManager, logout_user, UserMixin
+from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask, redirect, render_template, request, url_for
 from datetime import datetime
-from config import SECRET_KEY
 import os
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
+
+# ── Database path ─────────────────────────────────────────────────────────────
 if os.path.exists('/home/khairulrizal/mysite'):
     DB_PATH = "sqlite:////home/khairulrizal/mysite/comments.db"
 else:
@@ -17,14 +19,21 @@ else:
 app.config["SQLALCHEMY_DATABASE_URI"] = DB_PATH
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+# ── Secret key — reads from environment, falls back to config.py ──────────────
+app.secret_key = os.environ.get("SECRET_KEY")
+if not app.secret_key:
+    try:
+        from config import SECRET_KEY
+        app.secret_key = SECRET_KEY
+    except ImportError:
+        app.secret_key = "fallback-dev-key-not-for-production"
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
-app.secret_key = SECRET_KEY
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# ── User model now stored in SQLite ──────────────────────────────────────────
+# ── User model ────────────────────────────────────────────────────────────────
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
@@ -41,6 +50,7 @@ class User(UserMixin, db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# ── Comment model ─────────────────────────────────────────────────────────────
 class Comment(db.Model):
     __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key=True)
@@ -49,7 +59,7 @@ class Comment(db.Model):
     commenter_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     commenter = db.relationship('User', foreign_keys=commenter_id)
 
-# ── Portfolio / profile page (main landing page) ─────────────────────────────
+# ── Portfolio / profile page ──────────────────────────────────────────────────
 @app.route("/")
 def profile():
     return render_template("profile.html")
@@ -66,7 +76,7 @@ def index():
     db.session.commit()
     return redirect(url_for('index'))
 
-@app.route("/login/", methods=["GET", "POST"])
+# ── Login ─────────────────────────────────────────────────────────────────────
 @app.route("/login/", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
@@ -77,6 +87,7 @@ def login():
     login_user(user)
     return redirect(url_for('index'))
 
+# ── Logout ────────────────────────────────────────────────────────────────────
 @app.route("/logout/")
 @login_required
 def logout():
