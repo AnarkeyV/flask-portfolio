@@ -12,4 +12,4 @@ A full-stack Flask web app deployed on PythonAnywhere.
 Python · Flask · SQLite · SQLAlchemy · PythonAnywhere
 
 ## Live Site
-https://khairulrizal.pythonanywhere.com
+https://khairulrizal.qzz.io
