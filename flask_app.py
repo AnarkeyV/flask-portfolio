@@ -59,6 +59,27 @@ class Comment(db.Model):
     commenter_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     commenter = db.relationship('User', foreign_keys=commenter_id)
 
+# Auto-create tables on startup ───────────────────────────────────────────────
+with app.app_context():
+    db.create_all()
+
+# ── Temporary setup route - REMOVE AFTER USE ─────────────────────────────────
+@app.route("/setup-users")
+def setup_users():
+    from werkzeug.security import generate_password_hash
+    users = [
+        ("admin", "secret"),
+        ("bob", "less-secret"),
+        ("caroline", "completely-secret"),
+        ("tester", "super-secret"),
+    ]
+    for username, password in users:
+        if not User.query.filter_by(username=username).first():
+            user = User(username=username, password_hash=generate_password_hash(password))
+            db.session.add(user)
+    db.session.commit()
+    return "Users added successfully! Remove this route now."
+
 # ── Portfolio / profile page ──────────────────────────────────────────────────
 @app.route("/")
 def profile():
@@ -94,6 +115,3 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-# Auto-create tables on startup
-with app.app_context():
-    db.create_all()
