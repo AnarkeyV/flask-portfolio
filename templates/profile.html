@@ -699,6 +699,9 @@
 
         @media (max-width: 768px) { .hamburger { display: flex; } }
     </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>emailjs.init("uSRjXwpYxUkAw3Bik");</script>
 </head>
 <body>
 
@@ -1095,15 +1098,41 @@
             const email = document.getElementById('contactEmail').value.trim();
             const message = document.getElementById('contactMessage').value.trim();
             const status = document.getElementById('formStatus');
+            const button = document.querySelector('.form-submit');
+
             if (!name || !email || !message) {
                 status.textContent = 'Please fill in all fields.';
                 status.style.color = '#ff6b6b';
                 return;
             }
-            const mailto = `mailto:kuhei.raiza@gmail.com?subject=Message from ${encodeURIComponent(name)}&body=${encodeURIComponent(message + '\n\nFrom: ' + email)}`;
-            window.location.href = mailto;
-            status.textContent = '✓ Opening your email client...';
-            status.style.color = '#c9a84c';
+
+            // Disable button while sending
+            button.disabled = true;
+            button.textContent = 'Sending...';
+            status.textContent = '';
+
+            emailjs.send("service_slbl7br", "template_08xxhtd", {
+                from_name: name,
+                from_email: email,
+                message: message,
+            })
+            .then(() => {
+                status.textContent = '✓ Message sent successfully!';
+                status.style.color = '#c9a84c';
+                // Clear the form
+                document.getElementById('contactName').value = '';
+                document.getElementById('contactEmail').value = '';
+                document.getElementById('contactMessage').value = '';
+                button.textContent = 'Send Message';
+                button.disabled = false;
+            })
+            .catch((error) => {
+                status.textContent = '✗ Failed to send. Please email me directly at kuhei.raiza@gmail.com';
+                status.style.color = '#ff6b6b';
+                button.textContent = 'Send Message';
+                button.disabled = false;
+                console.error('EmailJS error:', error);
+            });
         }
 
         function toggleMenu() {
