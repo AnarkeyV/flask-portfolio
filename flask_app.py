@@ -93,3 +93,7 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+# Auto-create tables on startup
+with app.app_context():
+    db.create_all()
