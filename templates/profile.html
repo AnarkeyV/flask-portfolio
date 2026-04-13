@@ -1061,6 +1061,10 @@
                     <label>Message</label>
                     <textarea id="contactMessage" placeholder="Hi Khairul, I'd like to connect about..."></textarea>
                 </div>
+                <!-- Hidden honeypot field - bots fill this, humans don't -->
+                <div style="display:none">
+                    <input type="text" id="honeypot" name="honeypot">
+                </div>
                 <button class="form-submit" onclick="handleContact()">Send Message</button>
                 <p class="form-note" id="formStatus"></p>
             </div>
@@ -1094,6 +1098,11 @@
         });
 
         function handleContact() {
+            // If honeypot field is filled, it's a bot - silently reject
+            if (document.getElementById('honeypot').value) {
+                status.textContent = '✓ Message sent!';
+            return;
+            }
             const name = document.getElementById('contactName').value.trim();
             const email = document.getElementById('contactEmail').value.trim();
             const message = document.getElementById('contactMessage').value.trim();
