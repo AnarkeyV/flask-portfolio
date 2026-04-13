@@ -5,10 +5,16 @@ from flask_login import current_user, login_required, login_user, LoginManager, 
 from flask import Flask, redirect, render_template, request, url_for
 from datetime import datetime
 from config import SECRET_KEY
+import os
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////home/khairulrizal/mysite/comments.db"
+if os.path.exists('/home/khairulrizal/mysite'):
+    DB_PATH = "sqlite:////home/khairulrizal/mysite/comments.db"
+else:
+    DB_PATH = "sqlite:///data/comments.db"
+
+app.config["SQLALCHEMY_DATABASE_URI"] = DB_PATH
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
