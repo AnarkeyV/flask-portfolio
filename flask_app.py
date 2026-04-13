@@ -14,7 +14,7 @@ app.config["DEBUG"] = True
 if os.path.exists('/home/khairulrizal/mysite'):
     DB_PATH = "sqlite:////home/khairulrizal/mysite/comments.db"
 else:
-    DB_PATH = "sqlite:///instance/comments.db"
+    DB_PATH = os.environ.get("DATABASE_URL", "sqlite:////app/instance/comments.db")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = DB_PATH
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

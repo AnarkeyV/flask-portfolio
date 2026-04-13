@@ -7,11 +7,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Create data directory for SQLite
-RUN mkdir -p /app/data
+RUN mkdir -p /app/instance && chmod 777 /app/instance
 
 ENV FLASK_APP=flask_app.py
 ENV FLASK_ENV=production
+ENV DATABASE_URL=sqlite:////app/instance/comments.db
 
 EXPOSE 5000
 
