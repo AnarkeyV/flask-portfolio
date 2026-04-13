@@ -2,9 +2,9 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import current_user, login_required, login_user, LoginManager, logout_user, UserMixin
-from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask, redirect, render_template, request, url_for
 from datetime import datetime
+from config import SECRET_KEY
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -14,7 +14,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-app.secret_key = "mynameiskhairulrizalandiamsmart"
+app.secret_key = SECRET_KEY
 login_manager = LoginManager()
 login_manager.init_app(app)
 
