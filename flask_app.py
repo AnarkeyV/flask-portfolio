@@ -63,6 +63,11 @@ class Comment(db.Model):
 with app.app_context():
     db.create_all()
 
+# ── Portfolio / profile page (main landing page) ─────────────────────────────
+@app.route("/")
+def profile():
+    return render_template("profile.html")
+
 # ── Comments scratchpad page ──────────────────────────────────────────────────
 @app.route("/scratchpad", methods=["GET", "POST"])
 def index():
