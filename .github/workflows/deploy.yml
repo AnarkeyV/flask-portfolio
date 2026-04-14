@@ -10,10 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to EC2
+        env:
+          SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
-          printf '%s' "${{ secrets.EC2_SSH_KEY }}" > /tmp/ec2_key.pem
+          echo "$SSH_KEY" > /tmp/ec2_key.pem
           chmod 600 /tmp/ec2_key.pem
-          ssh -o StrictHostKeyChecking=no -i /tmp/ec2_key.pem ubuntu@${{ secrets.EC2_HOST }} "
+          ssh -o StrictHostKeyChecking=no -i /tmp/ec2_key.pem ubuntu@$EC2_HOST "
             cd ~/flask-portfolio &&
             git pull origin main &&
             docker-compose down &&
