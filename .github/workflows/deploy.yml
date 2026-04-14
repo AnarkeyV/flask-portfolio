@@ -14,7 +14,7 @@ jobs:
           SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
-          echo "$SSH_KEY" > /tmp/ec2_key.pem
+          echo "$SSH_KEY" | tr '|' '\n' > /tmp/ec2_key.pem
           chmod 600 /tmp/ec2_key.pem
           ssh -o StrictHostKeyChecking=no -i /tmp/ec2_key.pem ubuntu@$EC2_HOST "
             cd ~/flask-portfolio &&
