@@ -5,3 +5,4 @@ __pycache__/
 migrations/versions/
 config.py
 data/*.db
+flask-portfolio/
