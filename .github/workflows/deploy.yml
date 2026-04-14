@@ -1,0 +1,39 @@
+name: Deploy to All Servers
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy-ec2:
+    name: Deploy to AWS EC2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/flask-portfolio
+            git pull origin main
+            docker-compose down
+            docker-compose up --build -d
+
+  deploy-pythonanywhere:
+    name: Reload PythonAnywhere
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull latest code via PA API
+        run: |
+          curl -s -X POST \
+            --data-urlencode "command=cd /home/${{ secrets.PA_USERNAME }}/mysite && git pull origin main" \
+            -H "Authorization: Token ${{ secrets.PA_API_TOKEN }}" \
+            https://www.pythonanywhere.com/api/v0/user/${{ secrets.PA_USERNAME }}/consoles/
+
+      - name: Reload PythonAnywhere web app
+        run: |
+          curl -s -X POST \
+            -H "Authorization: Token ${{ secrets.PA_API_TOKEN }}" \
+            https://www.pythonanywhere.com/api/v0/user/${{ secrets.PA_USERNAME }}/webapps/khairulrizal.pythonanywhere.com/reload/
