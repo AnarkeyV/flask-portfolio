@@ -6,9 +6,34 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask, redirect, render_template, request, url_for
 from datetime import datetime
 import os
+from flask_talisman import Talisman
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
+
+# Security headers with Talisman
+Talisman(app,
+    content_security_policy={
+        'default-src': "'self'",
+        'script-src': ["'self'", "cdn.jsdelivr.net", "code.jquery.com", "maxcdn.bootstrapcdn.com", "'unsafe-inline'"],
+        'style-src': ["'self'", "cdn.jsdelivr.net", "fonts.googleapis.com", "maxcdn.bootstrapcdn.com", "'unsafe-inline'"],
+        'font-src': ["'self'", "fonts.googleapis.com", "fonts.gstatic.com", "maxcdn.bootstrapcdn.com"],
+        'img-src': ["'self'", "data:", "https:"],
+    },
+    force_https=False,  # Set to True once you have SSL on AWS
+    force_file_save=False,
+    frame_options='DENY'
+)
+
+# Rate limiting - FIXED VERSION
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
+limiter.init_app(app)
 
 # ── Database path ─────────────────────────────────────────────────────────────
 if os.path.exists('/home/khairulrizal/mysite'):
@@ -70,6 +95,7 @@ def profile():
 
 # ── Comments scratchpad page ──────────────────────────────────────────────────
 @app.route("/scratchpad", methods=["GET", "POST"])
+@limiter.limit("10 per minute", error_message="Too many comments. Please wait a moment.")
 def index():
     if request.method == "GET":
         return render_template("main_page.html", comments=Comment.query.all())
@@ -82,6 +108,7 @@ def index():
 
 # ── Login ─────────────────────────────────────────────────────────────────────
 @app.route("/login/", methods=["GET", "POST"])
+@limiter.limit("5 per minute", error_message="Too many login attempts. Please try again later.")
 def login():
     if request.method == "GET":
         return render_template("login_page.html", error=False)
