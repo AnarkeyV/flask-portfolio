@@ -9,7 +9,8 @@ import os
 from flask_talisman import Talisman
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from sqlalchemy import text  # Add this at the top with other imports
+from sqlalchemy import text
+import tempfile
 
 
 app = Flask(__name__)
@@ -39,9 +40,18 @@ limiter.init_app(app)
 
 # ── Database path ─────────────────────────────────────────────────────────────
 if os.path.exists('/home/khairulrizal/mysite'):
+    # PythonAnywhere environment
     DB_PATH = "sqlite:////home/khairulrizal/mysite/comments.db"
+elif os.environ.get("GITHUB_ACTIONS") == "true":
+    # GitHub Actions CI environment - use temporary directory
+    temp_dir = tempfile.gettempdir()
+    DB_PATH = f"sqlite:///{temp_dir}/comments.db"
+elif os.environ.get("DATABASE_URL"):
+    # Custom database URL from environment variable
+    DB_PATH = os.environ.get("DATABASE_URL")
 else:
-    DB_PATH = os.environ.get("DATABASE_URL", "sqlite:////app/instance/comments.db")
+    # Local development or other environments
+    DB_PATH = "sqlite:///comments.db"
 
 app.config["SQLALCHEMY_DATABASE_URI"] = DB_PATH
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -49,11 +59,15 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # ── Secret key — reads from environment, falls back to config.py ──────────────
 app.secret_key = os.environ.get("SECRET_KEY")
 if not app.secret_key:
-    try:
-        from config import SECRET_KEY
-        app.secret_key = SECRET_KEY
-    except ImportError:
-        app.secret_key = "fallback-dev-key-not-for-production"
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        # Use a dummy secret key for CI (not for production!)
+        app.secret_key = "github-actions-ci-dummy-key"
+    else:
+        try:
+            from config import SECRET_KEY
+            app.secret_key = SECRET_KEY
+        except ImportError:
+            app.secret_key = "fallback-dev-key-not-for-production"
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
