@@ -9,6 +9,8 @@ import os
 from flask_talisman import Talisman
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from sqlalchemy import text  # Add this at the top with other imports
+
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -84,9 +86,38 @@ class Comment(db.Model):
     commenter_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     commenter = db.relationship('User', foreign_keys=commenter_id)
 
+# ── Login attempts audit log ──────────────────────────────────────────────────
+class LoginAttempt(db.Model):
+    __tablename__ = "login_attempts"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128), nullable=False)
+    ip_address = db.Column(db.String(45), nullable=False)
+    user_agent = db.Column(db.String(256))
+    success = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
+
 # Auto-create tables on startup ───────────────────────────────────────────────
 with app.app_context():
     db.create_all()
+
+# ── Health check endpoint for monitoring ──────────────────────────────────────
+@app.route("/health")
+def health_check():
+    try:
+        # Test database connection - using text() for SQLAlchemy 2.0+
+        db.session.execute(text('SELECT 1'))
+        db_status = "connected"
+        http_status = 200
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+        http_status = 503
+
+    return {
+        "status": "healthy" if db_status == "connected" else "unhealthy",
+        "timestamp": datetime.now().isoformat(),
+        "database": db_status,
+        "version": "1.0.0"
+    }, http_status
 
 # ── Portfolio / profile page (main landing page) ─────────────────────────────
 @app.route("/")
@@ -106,17 +137,36 @@ def index():
     db.session.commit()
     return redirect(url_for('index'))
 
-# ── Login ─────────────────────────────────────────────────────────────────────
+# ── Login with audit logging ──────────────────────────────────────────────────
 @app.route("/login/", methods=["GET", "POST"])
 @limiter.limit("5 per minute", error_message="Too many login attempts. Please try again later.")
 def login():
     if request.method == "GET":
         return render_template("login_page.html", error=False)
-    user = User.query.filter_by(username=request.form["username"]).first()
-    if user is None or not user.check_password(request.form["password"]):
+
+    username = request.form["username"]
+    password = request.form["password"]
+    ip_address = request.remote_addr
+    user_agent = request.headers.get('User-Agent', 'Unknown')
+
+    user = User.query.filter_by(username=username).first()
+    login_success = user is not None and user.check_password(password)
+
+    # Log the attempt
+    attempt = LoginAttempt(
+        username=username,
+        ip_address=ip_address,
+        user_agent=user_agent,
+        success=login_success
+    )
+    db.session.add(attempt)
+    db.session.commit()
+
+    if login_success:
+        login_user(user)
+        return redirect(url_for('index'))
+    else:
         return render_template("login_page.html", error=True)
-    login_user(user)
-    return redirect(url_for('index'))
 
 # ── Logout ────────────────────────────────────────────────────────────────────
 @app.route("/logout/")
