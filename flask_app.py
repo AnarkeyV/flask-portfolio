@@ -1,4 +1,5 @@
 # flask_app.py
+from prometheus_flask_exporter import PrometheusMetrics
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import current_user, login_required, login_user, LoginManager, logout_user, UserMixin
@@ -15,6 +16,12 @@ import tempfile
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
+
+# ── Prometheus Metrics ────────────────────────────────────────────────────────
+metrics = PrometheusMetrics(app)
+
+# Custom metrics
+metrics.info('app_info', 'Portfolio Application Info', version='1.0.0')
 
 # Security headers with Talisman
 Talisman(app,
@@ -114,24 +121,25 @@ class LoginAttempt(db.Model):
 with app.app_context():
     db.create_all()
 
-# ── Health check endpoint for monitoring ──────────────────────────────────────
+# ── Health check endpoint ─────────────────────────────────────────────────────
 @app.route("/health")
-def health_check():
+def health():
+    from flask import jsonify
     try:
-        # Test database connection - using text() for SQLAlchemy 2.0+
-        db.session.execute(text('SELECT 1'))
-        db_status = "connected"
-        http_status = 200
+        # Test database connection
+        db.session.execute(db.text('SELECT 1'))
+        return jsonify({
+            "status": "healthy",
+            "database": "connected",
+            "version": "1.0.0"
+        }), 200
     except Exception as e:
-        db_status = f"error: {str(e)}"
-        http_status = 503
+        return jsonify({
+            "status": "unhealthy",
+            "database": "disconnected",
+            "error": str(e)
+        }), 500
 
-    return {
-        "status": "healthy" if db_status == "connected" else "unhealthy",
-        "timestamp": datetime.now().isoformat(),
-        "database": db_status,
-        "version": "1.0.0"
-    }, http_status
 
 # ── Portfolio / profile page (main landing page) ─────────────────────────────
 @app.route("/")
