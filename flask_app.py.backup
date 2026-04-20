@@ -20,7 +20,7 @@ app.config["DEBUG"] = True
 # ── Prometheus Metrics ────────────────────────────────────────────────────────
 metrics = PrometheusMetrics(app)
 
-# Register a custom metric to track app info
+# Custom metrics
 metrics.info('app_info', 'Portfolio Application Info', version='1.0.0')
 
 # Security headers with Talisman
@@ -197,12 +197,3 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-# ── Prometheus metrics endpoint ───────────────────────────────────────────────
-@app.route("/metrics")
-@metrics.do_not_track()  # Prevents metrics endpoint from tracking itself
-def metrics_endpoint():
-    return "Metrics available at /metrics", 200
-
-# Auto-create tables on startup ───────────────────────────────────────────────
-with app.app_context():
-    db.create_all()
