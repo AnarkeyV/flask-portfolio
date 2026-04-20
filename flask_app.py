@@ -199,6 +199,7 @@ def logout():
 
 # ── Prometheus metrics endpoint ───────────────────────────────────────────────
 @app.route("/metrics")
+@limiter.exempt
 @metrics.do_not_track()  # Prevents metrics endpoint from tracking itself
 def metrics_endpoint():
     return "Metrics available at /metrics", 200
