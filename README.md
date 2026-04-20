@@ -239,10 +239,17 @@ flask-portfolio/
 │   └── profile.jpg       # Profile photo
 └── README.md             # This file
 
+## 📊 Infrastructure Monitoring
+---------------------------------------------
+- **Platform**: Grafana Cloud + AWS CloudWatch
+- **Metrics**: EC2 CPU, Network, Disk I/O
+- **Dashboard**: Pre-built EC2 monitoring with real-time graphs
+- **Integration**: IAM role-based authentication with Assume Role
+
+[View Monitoring Dashboard](http://15.135.139.13:3000)
 
 🔮 Future Improvements
 ---------------------------------------------
-- Add Prometheus metrics endpoint
 - Deploy to Kubernetes cluster
 - Implement Terraform infrastructure as code
 - Add automated canary deployments
