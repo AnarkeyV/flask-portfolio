@@ -3,6 +3,7 @@
 [![Flask 2.2.3](https://img.shields.io/badge/flask-2.2.3-green.svg)](https://flask.palletsprojects.com/)
 [![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://www.docker.com/)
 [![Docker Hub](https://img.shields.io/badge/docker-hub-blue.svg)](https://hub.docker.com/r/kyrizal18/flask-portfolio)
+[![Docker Pulls](https://img.shields.io/docker/pulls/kyrizal18/flask-portfolio)](https://hub.docker.com/r/kyrizal18/flask-portfolio)
 [![AWS](https://img.shields.io/badge/AWS-EC2-orange.svg)](https://aws.amazon.com/)
 [![CodeQL](https://github.com/AnarkeyV/flask-portfolio/actions/workflows/deploy.yml/badge.svg)](https://github.com/AnarkeyV/flask-portfolio/actions)
 
