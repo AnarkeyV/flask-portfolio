@@ -1,6 +1,7 @@
 [![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/)
 [![Flask 2.2.3](https://img.shields.io/badge/flask-2.2.3-green.svg)](https://flask.palletsprojects.com/)
 [![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://www.docker.com/)
+[![Docker Hub](https://img.shields.io/badge/docker-hub-blue.svg)](https://hub.docker.com/r/kyrizal18/flask-portfolio)
 [![AWS](https://img.shields.io/badge/AWS-EC2-orange.svg)](https://aws.amazon.com/)
 [![CodeQL](https://github.com/AnarkeyV/flask-portfolio/actions/workflows/deploy.yml/badge.svg)](https://github.com/AnarkeyV/flask-portfolio/actions)
 
@@ -208,6 +209,37 @@ docker run -p 5000:5000 flask-portfolio
 docker-compose up --build
 
 
+## 🐳 Docker Hub
+
+Pre-built container images available on Docker Hub:
+
+```bash
+# Pull the latest image
+docker pull kyrizal18/flask-portfolio:latest
+
+# Run the container
+docker run -p 5000:5000 kyrizal18/flask-portfolio:latest
+
+# Or with docker-compose
+curl -O https://raw.githubusercontent.com/AnarkeyV/flask-portfolio/main/docker-compose.yml
+docker-compose up
+
+# Clone the repository
+git clone https://github.com/AnarkeyV/flask-portfolio.git
+cd flask-portfolio
+
+# Build the Docker image
+docker build -t kyrizal18/flask-portfolio:latest .
+
+# Run it
+docker run -p 5000:5000 kyrizal18/flask-portfolio:latest
+```
+### Tags Available
+- `latest` - Most recent stable build
+- `sha-xxxx` - Commit-specific builds from GitHub Actions
+- `main` - Main branch builds
+
+
 📡 API Endpoints
 ---------------------------------------------
 Endpoint	    Method	        Authentication	        Description
@@ -239,14 +271,37 @@ flask-portfolio/
 │   └── profile.jpg       # Profile photo
 └── README.md             # This file
 
-## 📊 Infrastructure Monitoring
----------------------------------------------
-- **Platform**: Grafana Cloud + AWS CloudWatch
-- **Metrics**: EC2 CPU, Network, Disk I/O
-- **Dashboard**: Pre-built EC2 monitoring with real-time graphs
-- **Integration**: IAM role-based authentication with Assume Role
 
-[View Monitoring Dashboard](http://15.135.139.13:3000)
+## 📊 Monitoring & Observability
+---------------------------------------------
+### Application Metrics (Prometheus + Grafana Cloud)
+
+| Metric | Description |
+|--------|-------------|
+| `flask_http_request_total` | Total HTTP requests by endpoint/status |
+| `rate(flask_http_request_total[5m])` | Request rate per second |
+| `flask_http_request_duration_seconds_bucket` | Request duration histogram |
+| `up{job="flask-portfolio"}` | Application health status |
+
+### Infrastructure Metrics (AWS CloudWatch)
+
+| Metric | Description |
+|--------|-------------|
+| `CPUUtilization` | EC2 CPU usage percentage |
+| `NetworkIn/Out` | Network traffic |
+| `DiskRead/WriteOps` | Disk I/O operations |
+
+### Monitoring Stack
+- **Metrics Export**: Prometheus Flask Exporter (`/metrics` endpoint)
+- **Metrics Collection**: Grafana Alloy (lightweight agent, ~35MB RAM)
+- **Metrics Storage**: Grafana Cloud (free tier)
+- **Infrastructure**: AWS CloudWatch via Grafana Cloud integration
+
+### Live Dashboards
+- **Grafana Cloud**: Real-time metrics at [Grafana Cloud Portal](https://grafana.com)
+- **Health Check**: `/health` endpoint for uptime monitoring
+- **Prometheus Endpoint**: `/metrics` for raw metrics
+
 
 🔮 Future Improvements
 ---------------------------------------------
