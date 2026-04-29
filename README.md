@@ -220,7 +220,7 @@ Pre-built container images available on Docker Hub:
 docker pull kyrizal18/flask-portfolio:latest
 
 # Run the container
-docker run -p 5000:5000 kyrizal18/flask-portfolio:latest
+docker run -p 5002:5000 kyrizal18/flask-portfolio:latest
 
 # Or with docker-compose
 curl -O https://raw.githubusercontent.com/AnarkeyV/flask-portfolio/main/docker-compose.yml
