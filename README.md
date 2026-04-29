@@ -1,3 +1,4 @@
+[![GitHub release](https://img.shields.io/github/v/release/AnarkeyV/flask-portfolio)](https://github.com/AnarkeyV/flask-portfolio/releases/tag/v1.0.0)
 [![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/)
 [![Flask 2.2.3](https://img.shields.io/badge/flask-2.2.3-green.svg)](https://flask.palletsprojects.com/)
 [![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://www.docker.com/)
