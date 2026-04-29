@@ -113,7 +113,7 @@ Message:
 
         # Send using Zoho SMTP
         with smtplib.SMTP_SSL('smtp.zoho.com', 465) as smtp:
-            smtp.login("khairul@khairulrizal.qzz.io", "YOUR_APP_PASSWORD_HERE")
+            smtp.login("khairul@khairulrizal.qzz.io", "Ajcb3AQNKTjq")
             smtp.send_message(msg)
 
         # Optional: Send auto-reply to the person who contacted you
@@ -131,7 +131,7 @@ Khairul Rizal
         auto_reply['To'] = email
 
         with smtplib.SMTP_SSL('smtp.zoho.com', 465) as smtp:
-            smtp.login("khairul@khairulrizal.qzz.io", "hnsxhyniDmpR")
+            smtp.login("khairul@khairulrizal.qzz.io", "Ajcb3AQNKTjq")
             smtp.send_message(auto_reply)
 
         return jsonify({"success": True, "message": "Email sent successfully"})
