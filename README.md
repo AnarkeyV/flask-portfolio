@@ -6,15 +6,16 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/kyrizal18/flask-portfolio)](https://hub.docker.com/r/kyrizal18/flask-portfolio)
 [![AWS](https://img.shields.io/badge/AWS-EC2-orange.svg)](https://aws.amazon.com/)
 [![CodeQL](https://github.com/AnarkeyV/flask-portfolio/actions/workflows/deploy.yml/badge.svg)](https://github.com/AnarkeyV/flask-portfolio/actions)
+[![Kubernetes](https://img.shields.io/badge/kubernetes-326CE5?style=flat&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
 
 # 🚀 Khairul Rizal's DevOps Portfolio
-
+---------------------------------------------
 [![CI/CD Pipeline](https://github.com/AnarkeyV/flask-portfolio/actions/workflows/deploy.yml/badge.svg)](https://github.com/AnarkeyV/flask-portfolio/actions)
 [![Security Scan](https://github.com/AnarkeyV/flask-portfolio/actions/workflows/deploy.yml/badge.svg)](https://github.com/AnarkeyV/flask-portfolio/actions)
 [![Health Status](https://img.shields.io/website?url=https%3A%2F%2Fkhairulrizal.qzz.io%2Fhealth&label=Production%20Health)](https://khairulrizal.qzz.io/health)
 
 ## 📋 Table of Contents
-
+---------------------------------------------
 - [Live Sites](#live-sites)
 - [Project Overview](#project-overview)
 - [Architecture](#architecture)
@@ -28,11 +29,12 @@
 - [Project Structure](#project-structure)
 - [Future Improvements](#future-improvements)
 - [Contact](#contact)
+- [Kubernetes Deployment](#kubernetes-deployment)
 
 ---
 
 ## 🌐 Live Sites
-
+---------------------------------------------
 | Environment | URL | Status |
 |-------------|-----|--------|
 | **🚀 Production (AWS)** | [khairulrizal.qzz.io](https://khairulrizal.qzz.io) | [![Health](https://img.shields.io/website?url=https%3A%2F%2Fkhairulrizal.qzz.io%2Fhealth&label=online)](https://khairulrizal.qzz.io/health) |
@@ -43,7 +45,7 @@
 ---
 
 ## 📖 Project Overview
-
+---------------------------------------------
 A **production-grade full-stack Flask web application** demonstrating DevOps best practices including:
 
 - ✅ CI/CD automation with GitHub Actions
@@ -55,7 +57,7 @@ A **production-grade full-stack Flask web application** demonstrating DevOps bes
 This project was built as part of my **DevOps/Cloud Support Engineering training** to showcase real-world infrastructure and security skills.
 
 ### ✨ Key Features
-
+---------------------------------------------
 | Feature | Description |
 |---------|-------------|
 | **🔐 User Authentication** | Secure login/logout with scrypt password hashing |
@@ -66,6 +68,7 @@ This project was built as part of my **DevOps/Cloud Support Engineering training
 ---
 
 ## 🏗️ Architecture
+---------------------------------------------
 
 ┌─────────────┐ ┌─────────────┐ ┌─────────────────┐
 │ Local │────▶│ GitHub │────▶│ Security │
@@ -88,7 +91,7 @@ This project was built as part of my **DevOps/Cloud Support Engineering training
 ---
 
 ## 🔒 Security Features
-
+---------------------------------------------
 | Feature | Implementation | Purpose |
 |---------|----------------|---------|
 | **Security Headers** | Flask-Talisman (CSP, X-Frame-Options, X-XSS-Protection) | Prevent XSS, clickjacking, and MIME attacks |
@@ -101,7 +104,7 @@ This project was built as part of my **DevOps/Cloud Support Engineering training
 ---
 
 ## 📊 Observability
-
+---------------------------------------------
 | Component | Purpose | Endpoint/Table |
 |-----------|---------|----------------|
 | **Health Check** | Monitor application and database status | `GET /health` |
@@ -166,7 +169,7 @@ CI/CD Pipeline Design	        GitHub Actions, automated testing, multi-stage dep
 Multi-environment Deployment	Staging (PythonAnywhere) → Production (AWS EC2)
 Security Hardening	            Security headers, rate limiting, vulnerability scanning
 Observability	                Health checks, audit logging, structured logging
-Container Orchestration	        Docker, Docker Compose
+Container Orchestration	        Docker, Docker Compose, Kubernetes (Minikube)
 Cloud Deployment	            AWS EC2, PythonAnywhere, Cloudflare
 Version Control	                Git, GitHub, branch management
 
@@ -212,7 +215,7 @@ docker-compose up --build
 
 
 ## 🐳 Docker Hub
-
+---------------------------------------------
 Pre-built container images available on Docker Hub:
 
 ```bash
@@ -242,7 +245,87 @@ docker run -p 5000:5000 kyrizal18/flask-portfolio:latest
 - `main` - Main branch builds
 
 
-📡 API Endpoints
+
+## ☸️ Kubernetes Deployment
+---------------------------------------------
+### Local Development with Minikube
+---------------------------------------------
+This project includes Kubernetes manifests for local development and testing using Minikube, demonstrating container orchestration skills.
+
+### Prerequisites
+---------------------------------------------
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
+- Docker Desktop (for the driver)
+
+### Deploy to Minikube
+---------------------------------------------
+```bash
+# Start Minikube
+minikube start --driver=docker
+
+# Load your Docker image into Minikube
+minikube image load kyrizal18/flask-portfolio:latest
+
+# Apply the Kubernetes manifests
+kubectl apply -f deployment.yaml
+
+# Access the application
+minikube service flask-portfolio
+
+# Kubernetes Resources
+---------------------------------------------
+Resource	        Configuration	            Purpose
+------------------------------------------------------------------------------------------
+Deployment	        1 replica (configurable)	Manages pod lifecycle and rolling updates
+Service	            LoadBalancer type	        Exposes the application externally
+Liveness Probe	    /health endpoint	        Automatically restarts unhealthy containers
+Readiness Probe	    /health endpoint	        Ensures traffic only goes to ready pods
+
+
+
+# Useful kubectl Commands
+---------------------------------------------
+
+# Check pod status
+kubectl get pods
+
+# View all resources
+kubectl get all
+
+# Scale the application to 3 replicas
+kubectl scale deployment flask-portfolio --replicas=3
+
+# View pod logs
+kubectl logs -l app=flask-portfolio
+
+# Port forward for local testing
+kubectl port-forward service/flask-portfolio 8080:5000
+
+# Perform a rolling update
+kubectl set image deployment/flask-portfolio flask-portfolio=kyrizal18/flask-portfolio:latest
+
+# Check rollout status
+kubectl rollout status deployment/flask-portfolio
+
+# View deployment history
+kubectl rollout history deployment/flask-portfolio
+
+# Roll back to previous version
+kubectl rollout undo deployment/flask-portfolio
+
+# Clean up
+kubectl delete deployment flask-portfolio
+kubectl delete service flask-portfolio
+minikube stop
+
+# Kubernetes Dashboard
+---------------------------------------------
+# Launch the Kubernetes web UI
+minikube dashboard
+
+
+## 📡 API Endpoints
 ---------------------------------------------
 Endpoint	    Method	        Authentication	        Description
 ---------------------------------------------------------------------
@@ -253,7 +336,6 @@ Endpoint	    Method	        Authentication	        Description
 /login/	        GET	            None	                Login page
 /login/	        POST	        None	                Authenticate user
 /logout/	    GET	            Required	            Logout user
-
 
 📁 Project Structure
 ---------------------------------------------
@@ -307,7 +389,7 @@ flask-portfolio/
 
 🔮 Future Improvements
 ---------------------------------------------
-- Deploy to Kubernetes cluster
+- Deploy to cloud Kubernetes (EKS/GKE/AKS)
 - Implement Terraform infrastructure as code
 - Add automated canary deployments
 - Integrate Sentry for error tracking
