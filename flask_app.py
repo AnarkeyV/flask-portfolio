@@ -111,9 +111,12 @@ Message:
         msg['To'] = "khairul@khairulrizal.qzz.io"
         msg['Reply-To'] = email
 
-        # Send using Zoho SMTP
+        # Send using Zoho SMTP - use environment variable for password
+        ZOHO_PASSWORD = os.environ.get("ZOHO_APP_PASSWORD", "YOUR_BACKUP_PASSWORD_HERE")
+
+
         with smtplib.SMTP_SSL('smtp.zoho.com', 465) as smtp:
-            smtp.login("khairul@khairulrizal.qzz.io", "Ajcb3AQNKTjq")
+            smtp.login("khairul@khairulrizal.qzz.io", ZOHO_PASSWORD)
             smtp.send_message(msg)
 
         # Optional: Send auto-reply to the person who contacted you
@@ -131,7 +134,7 @@ Khairul Rizal
         auto_reply['To'] = email
 
         with smtplib.SMTP_SSL('smtp.zoho.com', 465) as smtp:
-            smtp.login("khairul@khairulrizal.qzz.io", "Ajcb3AQNKTjq")
+            smtp.login("khairul@khairulrizal.qzz.io", ZOHO_PASSWORD)
             smtp.send_message(auto_reply)
 
         return jsonify({"success": True, "message": "Email sent successfully"})

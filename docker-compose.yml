@@ -3,10 +3,10 @@ services:
     build: .
     ports:
       - "5001:5000"
+    environment:
+      - FLASK_ENV=production
     env_file:
       - .env
     volumes:
       - ./instance:/app/instance
     restart: unless-stopped
-
-# Prometheus and Grafana removed - using Grafana Cloud instead
