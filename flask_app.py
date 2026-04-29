@@ -12,6 +12,9 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from sqlalchemy import text
 import tempfile
+import smtplib
+from email.message import EmailMessage
+from flask import request, jsonify
 
 
 app = Flask(__name__)
@@ -80,6 +83,62 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+# ── Contact form email endpoint ───────────────────────────────────────────────
+@app.route("/send_contact", methods=["POST"])
+def send_contact():
+    try:
+        data = request.get_json()
+        name = data.get('name', '').strip()
+        email = data.get('email', '').strip()
+        message = data.get('message', '').strip()
+
+        # Validate inputs
+        if not name or not email or not message:
+            return jsonify({"success": False, "error": "All fields are required"}), 400
+
+        # Create email message
+        msg = EmailMessage()
+        msg.set_content(f"""
+Name: {name}
+Email: {email}
+
+Message:
+{message}
+        """)
+        msg['Subject'] = f"Portfolio Contact from {name}"
+        msg['From'] = "khairul@khairulrizal.qzz.io"
+        msg['To'] = "khairul@khairulrizal.qzz.io"
+        msg['Reply-To'] = email
+
+        # Send using Zoho SMTP
+        with smtplib.SMTP_SSL('smtp.zoho.com', 465) as smtp:
+            smtp.login("khairul@khairulrizal.qzz.io", "YOUR_APP_PASSWORD_HERE")
+            smtp.send_message(msg)
+
+        # Optional: Send auto-reply to the person who contacted you
+        auto_reply = EmailMessage()
+        auto_reply.set_content(f"""
+Dear {name},
+
+Thank you for reaching out to me. I have received your message and will get back to you within 24-48 hours.
+
+Best regards,
+Khairul Rizal
+        """)
+        auto_reply['Subject'] = "Thank you for contacting Khairul Rizal"
+        auto_reply['From'] = "khairul@khairulrizal.qzz.io"
+        auto_reply['To'] = email
+
+        with smtplib.SMTP_SSL('smtp.zoho.com', 465) as smtp:
+            smtp.login("khairul@khairulrizal.qzz.io", "hnsxhyniDmpR")
+            smtp.send_message(auto_reply)
+
+        return jsonify({"success": True, "message": "Email sent successfully"})
+
+    except Exception as e:
+        print(f"Email error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 # ── User model ────────────────────────────────────────────────────────────────
 class User(UserMixin, db.Model):

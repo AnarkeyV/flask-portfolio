@@ -701,7 +701,13 @@
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script>emailjs.init("uSRjXwpYxUkAw3Bik");</script>
+    <script>
+        // EmailJS browser SDK initialization
+        // Public key is safe to use on the frontend, but your EmailJS private keys must never be placed here.
+        emailjs.init({
+            publicKey: "uSRjXwpYxUkAw3Bik"
+        });
+    </script>
 </head>
 <body>
 
@@ -1065,7 +1071,7 @@
                 <div style="display:none">
                     <input type="text" id="honeypot" name="honeypot">
                 </div>
-                <button class="form-submit" onclick="handleContact()">Send Message</button>
+                <button type="button" class="form-submit" onclick="handleContact()">Send Message</button>
                 <p class="form-note" id="formStatus"></p>
             </div>
         </div>
@@ -1098,51 +1104,73 @@
         });
 
         function handleContact() {
-            // If honeypot field is filled, it's a bot - silently reject
-            if (document.getElementById('honeypot').value) {
-                status.textContent = '✓ Message sent!';
-            return;
-            }
-            const name = document.getElementById('contactName').value.trim();
-            const email = document.getElementById('contactEmail').value.trim();
-            const message = document.getElementById('contactMessage').value.trim();
-            const status = document.getElementById('formStatus');
-            const button = document.querySelector('.form-submit');
+    const status = document.getElementById('formStatus');
+    const button = document.querySelector('.form-submit');
 
-            if (!name || !email || !message) {
-                status.textContent = 'Please fill in all fields.';
-                status.style.color = '#ff6b6b';
-                return;
-            }
+    // Honeypot anti-spam field: real users should leave this empty.
+    const honeypot = document.getElementById('honeypot').value;
+    if (honeypot) {
+        status.textContent = '✓ Message sent!';
+        status.style.color = '#c9a84c';
+        return;
+    }
 
-            // Disable button while sending
-            button.disabled = true;
-            button.textContent = 'Sending...';
-            status.textContent = '';
+    const name = document.getElementById('contactName').value.trim();
+    const email = document.getElementById('contactEmail').value.trim();
+    const message = document.getElementById('contactMessage').value.trim();
 
-            emailjs.send("service_8jird2a", "template_08xxhtd", {
-                from_name: name,
-                from_email: email,
-                message: message,
-            })
-            .then(() => {
-                status.textContent = '✓ Message sent successfully!';
-                status.style.color = '#c9a84c';
-                // Clear the form
-                document.getElementById('contactName').value = '';
-                document.getElementById('contactEmail').value = '';
-                document.getElementById('contactMessage').value = '';
-                button.textContent = 'Send Message';
-                button.disabled = false;
-            })
-            .catch((error) => {
-                status.textContent = '✗ Failed to send. Please email me directly at khairul@khairulrizal.qzz.io';
-                status.style.color = '#ff6b6b';
-                button.textContent = 'Send Message';
-                button.disabled = false;
-                console.error('EmailJS error:', error);
-            });
+    if (!name || !email || !message) {
+        status.textContent = 'Please fill in all fields.';
+        status.style.color = '#ff6b6b';
+        return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+        status.textContent = 'Please enter a valid email address.';
+        status.style.color = '#ff6b6b';
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = 'Sending...';
+    status.textContent = '';
+
+    // Send to your Flask backend
+    fetch('/send_contact', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            name: name,
+            email: email,
+            message: message
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            status.textContent = '✓ Message sent successfully! I will reply within 24 hours.';
+            status.style.color = '#c9a84c';
+            // Clear the form
+            document.getElementById('contactName').value = '';
+            document.getElementById('contactEmail').value = '';
+            document.getElementById('contactMessage').value = '';
+        } else {
+            throw new Error(data.error || 'Unknown error');
         }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        status.textContent = '✗ Failed to send. Please email me directly at khairul@khairulrizal.qzz.io';
+        status.style.color = '#ff6b6b';
+    })
+    .finally(() => {
+        button.textContent = 'Send Message';
+        button.disabled = false;
+    });
+}
 
         function toggleMenu() {
             const links = document.querySelector('.nav-links');
