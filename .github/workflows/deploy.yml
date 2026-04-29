@@ -78,7 +78,7 @@ jobs:
           python -c "from flask_app import db; assert db is not None, 'Database not initialized'"
 
   # YOUR EXISTING EC2 DEPLOYMENT (preserved)
-    deploy-ec2:
+  deploy-ec2:             # ← CORRECT: Same level as test and security-scan
     name: Deploy to AWS EC2
     runs-on: ubuntu-latest
     needs: test
