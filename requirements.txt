@@ -38,3 +38,4 @@ watchtower==3.4.0
 Werkzeug==3.1.8
 wrapt==2.1.2
 prometheus-flask-exporter==0.23.0
+gunicorn
