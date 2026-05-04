@@ -16,6 +16,13 @@ import smtplib
 from email.message import EmailMessage
 from flask import request, jsonify
 
+# Startup diagnostics
+import sys
+print(f"[INFO] Python version: {sys.version}")
+print(f"[INFO] Current working directory: {os.getcwd()}")
+print(f"[INFO] WEBSITE_HOSTNAME: {os.environ.get('WEBSITE_HOSTNAME', 'not set')}")
+print(f"[INFO] DATABASE_URL: {os.environ.get('DATABASE_URL', 'not set')}")
+
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -58,17 +65,23 @@ elif os.environ.get("GITHUB_ACTIONS") == "true":
     DB_PATH = f"sqlite:///{temp_dir}/comments.db"
 elif os.environ.get("WEBSITE_HOSTNAME"):
     # Azure App Service environment - use /home directory (writable)
-    DB_PATH = "sqlite:////home/site/wwwroot/instance/comments.db"
-    # Ensure the instance directory exists
-    import os
+    import os as _os
+    # Create instance directory with proper permissions
     instance_dir = '/home/site/wwwroot/instance'
-    os.makedirs(instance_dir, exist_ok=True)
+    _os.makedirs(instance_dir, exist_ok=True)
+    # Ensure directory is writable
+    _os.chmod(instance_dir, 0o777)
+    DB_PATH = f"sqlite:///{instance_dir}/comments.db"
+    print(f"[INFO] Using Azure database at: {DB_PATH}")
 elif os.environ.get("DATABASE_URL"):
     # Custom database URL from environment variable
     DB_PATH = os.environ.get("DATABASE_URL")
 else:
     # Local development or other environments
     DB_PATH = "sqlite:///comments.db"
+
+app.config["SQLALCHEMY_DATABASE_URI"] = DB_PATH
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # ── Secret key — reads from environment, falls back to config.py ──────────────
 app.secret_key = os.environ.get("SECRET_KEY")
